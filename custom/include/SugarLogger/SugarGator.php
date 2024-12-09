@@ -94,6 +94,10 @@ class SugarGator extends SugarLogger implements LoggerTemplate
             $message = array_shift($message);
         }
 
+        if (is_array($message) && safeCount($message) > 1) {
+            $message = implode("\n", $message);
+        }
+
         $logsBean = BeanFactory::newBean('sg_LogsAggregator');
 
         if (is_null($logsBean) || !is_a($logsBean, 'sg_LogsAggregator')) {
@@ -109,74 +113,5 @@ class SugarGator extends SugarLogger implements LoggerTemplate
         $this->bean->name = substr($message, 0, 255);
         $this->bean->assigned_user_id = $current_user->id;
         $this->bean->save();
-    }
-
-
-    /**
-     * Needs to be called via daily scheduler job.
-     *
-     * @return void
-     * @throws DateInvalidOperationException
-     * @throws DateMalformedIntervalStringException
-     * @throws Exception
-     */
-    protected function pruneLogEntries(): void
-    {
-        $this->db = DBManagerFactory::getInstance();
-        $this->conn = DBManagerFactory::getInstance()->getConnection();
-        $this->pruneOldLogs($this->getPruneByDate());
-        $this->pruneLogsOverMaxNumRecords();
-    }
-
-
-    protected function pruneAuditTable(): void
-    {
-        $sql = "delete from sg_logsaggregator_audit where parent_id not in (select id from sg_logsaggregator)";
-        try {
-            $this->conn->executeStatement($sql);
-        } catch (Exception $e) {
-            $GLOBALS['log']->error("SugarGator could not prune logs audit table with query:\n$sql\nException: {$e->getMessage()}");
-        }
-    }
-
-
-    protected function pruneLogsOverMaxNumRecords(): void
-    {
-        $sql = "delete from sg_logsaggregator where id in (select id from (select id from sg_logsaggregator where channel = ? order by date_entered DESC limit ?,?) log_ids)";
-        $params = [$this->channel, 100, $this->max_num_records];
-        try {
-            $this->conn->executeStatement($sql, $params);
-        } catch (Exception $e) {
-            $GLOBALS['log']->fatal("SugarGator could not prune logs by max_num_records with query\n$sql\n max_num_records = '$this->max_num_records'\nException:\n" . $e->getMessage());
-        }
-    }
-
-
-    protected function pruneOldLogs(string $pruneDate): void
-    {
-        if (empty($pruneDate)) {
-            return;
-        }
-
-        $sql = "delete from sg_logsaggregator where channel = ? and date_entered < ?";
-        $params = [$this->channel, $pruneDate];
-        try {
-            $this->conn->executeStatement($sql, $params);
-        } catch (Exception $e) {
-            $GLOBALS['log']->fatal("SugarGator could not prune logs by date with query\n$sql\n pruneDate = '$pruneDate'\nException:\n" . $e->getMessage());
-        }
-    }
-
-
-    /**
-     * @throws DateInvalidOperationException
-     * @throws DateMalformedIntervalStringException
-     */
-    protected function getPruneByDate(): string
-    {
-        $dateIntervalToPrune = new DateInterval('PT' . $this->prune_records_older_than_days . 'd');
-        $sugarDateTime = new SugarDateTime();
-        $sugarDateTime->sub($dateIntervalToPrune);
-        return $sugarDateTime->asDbDate();
     }
 }

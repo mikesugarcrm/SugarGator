@@ -1,5 +1,9 @@
 <?php
 
+namespace Sugarcrm\Sugarcrm\custom\SugarGator\Config;
+
+use Configurator;
+
 class SugarGatorConfigurator
 {
     public function configure()

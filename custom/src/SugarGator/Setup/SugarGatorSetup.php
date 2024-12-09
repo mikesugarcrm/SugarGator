@@ -1,15 +1,13 @@
 <?php
 
+
+namespace Sugarcrm\Sugarcrm\custom\SugarGator\Setup;
 use Sugarcrm\Sugarcrm\custom\SugarGator\ACLs\SugarGatorACL;
+use Sugarcrm\Sugarcrm\custom\SugarGator\Config\SugarGatorConfigurator;
+use Sugarcrm\Sugarcrm\custom\SugarGator\Managers\SugarGatorPruneJobSchedulerInstaller;
 
 class SugarGatorSetup
 {
-    public function __construct()
-    {
-
-    }
-
-
     public static function setup(): void
     {
         $acl = new SugarGatorACL();
@@ -17,6 +15,9 @@ class SugarGatorSetup
 
         $configurator = new SugarGatorConfigurator();
         $configurator->configure();
+
+        $jobInstaller = new SugarGatorPruneJobSchedulerInstaller();
+        $jobInstaller->createScheduler();
     }
 
 
@@ -27,5 +28,8 @@ class SugarGatorSetup
 
         $configurator = new SugarGatorConfigurator();
         $configurator->unconfigure();
+
+        $jobInstaller = new SugarGatorPruneJobSchedulerInstaller();
+        $jobInstaller->deactivateAndSoftDelete();
     }
 }
