@@ -106,6 +106,46 @@ $installdefs = array (
       'from' => '<basepath>/custom/post_install/SugarGatorConfigurator.php',
       'to' => 'custom/post_install/SugarGatorConfigurator.php',
     ),
+    10 => 
+    array (
+      'from' => '<basepath>/custom/Extension/modules/sg_LogsAggregator/Ext/Vardefs/indices.php',
+      'to' => 'custom/Extension/modules/sg_LogsAggregator/Ext/Vardefs/indices.php',
+    ),
+    11 => 
+    array (
+      'from' => '<basepath>/custom/Extension/modules/Schedulers/Ext/Language/en_us.sugar_gator_pruner.php',
+      'to' => 'custom/Extension/modules/Schedulers/Ext/Language/en_us.sugar_gator_pruner.php',
+    ),
+    12 => 
+    array (
+      'from' => '<basepath>/custom/Extension/modules/Schedulers/Ext/ScheduledTasks/sugarGatorPrunerJob.php',
+      'to' => 'custom/Extension/modules/Schedulers/Ext/ScheduledTasks/sugarGatorPrunerJob.php',
+    ),
+    13 => 
+    array (
+      'from' => '<basepath>/custom/src/SugarGator/Config/SugarGatorConfigurator.php',
+      'to' => 'custom/src/SugarGator/Config/SugarGatorConfigurator.php',
+    ),
+    14 => 
+    array (
+      'from' => '<basepath>/custom/src/SugarGator/ACLs/SugarGatorACL.php',
+      'to' => 'custom/src/SugarGator/ACLs/SugarGatorACL.php',
+    ),
+    15 => 
+    array (
+      'from' => '<basepath>/custom/src/SugarGator/Managers/SugarGatorPruneJobSchedulerInstaller.php',
+      'to' => 'custom/src/SugarGator/Managers/SugarGatorPruneJobSchedulerInstaller.php',
+    ),
+    16 => 
+    array (
+      'from' => '<basepath>/custom/src/SugarGator/Setup/SugarGatorSetup.php',
+      'to' => 'custom/src/SugarGator/Setup/SugarGatorSetup.php',
+    ),
+    17 => 
+    array (
+      'from' => '<basepath>/custom/src/SugarGator/Jobs/PruneLogRecords.php',
+      'to' => 'custom/src/SugarGator/Jobs/PruneLogRecords.php',
+    ),
   ),
   'post_execute' => 
   array (
