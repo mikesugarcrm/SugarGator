@@ -101,6 +101,11 @@ $installdefs = array (
       'from' => '<basepath>/custom/src/Logger/Handler/SugarGatorHandler.php',
       'to' => 'custom/src/Logger/Handler/SugarGatorHandler.php',
     ),
+    9 => 
+    array (
+      'from' => '<basepath>/custom/post_install/SugarGatorConfigurator.php',
+      'to' => 'custom/post_install/SugarGatorConfigurator.php',
+    ),
   ),
   'post_execute' => 
   array (
