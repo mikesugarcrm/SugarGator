@@ -3,6 +3,8 @@
 namespace Sugarcrm\Sugarcrm\custom\SugarGator\ACLs;
 
 use BeanFactory;
+use DBManagerFactory;
+use Exception;
 use SugarBean;
 use Sugarcrm\Sugarcrm\Dbal\Connection;
 
@@ -13,11 +15,11 @@ class SugarGatorACL
     public Connection $conn;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
-        $this->conn = \DBManagerFactory::getInstance()->getConnection();
+        $this->conn = DBManagerFactory::getInstance()->getConnection();
     }
 
 
@@ -36,6 +38,19 @@ class SugarGatorACL
 
             $aclActionBean->aclaccess = $access;
             $aclActionBean->save();
+            $this->linkActionsToRoles($aclActionBean);
+        }
+    }
+
+
+
+    public function linkActionsToRoles(SugarBean $aclActionBean): void
+    {
+        $aclRole = BeanFactory::newBean('ACLRoles');
+        $allRoles = $aclRole->getAllRoles();
+
+        foreach ($allRoles as $roleBean) {
+            $aclRole->setAction($roleBean->id, $aclActionBean->id, $aclActionBean->aclaccess);
         }
     }
 
@@ -64,7 +79,7 @@ class SugarGatorACL
         $params = [$action_name, $this->module, 0];
         try {
             $aclID = $this->conn->fetchOne($sql, $params);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $GLOBALS['log']->fatal("Could not find ACL for SugarGator action '$action_name'\nquery: $sql\nException: " . $e->getMessage());
         }
         return $aclID;

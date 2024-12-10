@@ -2,6 +2,7 @@
 
 //namespace Sugarcrm\Sugarcrm\custom\inc\SugarLogger;
 use Doctrine\DBAL\Connection;
+use Sugarcrm\Sugarcrm\Util\Uuid;
 
 class SugarGator extends SugarLogger implements LoggerTemplate
 {
@@ -10,7 +11,7 @@ class SugarGator extends SugarLogger implements LoggerTemplate
     public int $prune_records_older_than_days = 30; // in days.
     public string $defaultChannel = 'sugarcrm';
     public string $channel = '';
-    public $config = [];
+    public array $config = [];
     public DBManager $db;
     public Connection $conn;
 
@@ -52,8 +53,8 @@ class SugarGator extends SugarLogger implements LoggerTemplate
 
         $fileHandlerFound = false;
         $cfg = SugarConfig::getInstance();
-        $channelHandlers = $cfg->get("logger.channels.{$this->channel}.handlers");
-        foreach ($channelHandlers as $index => $handler) {
+        $channelHandlers = $cfg->get("logger.channels.$this->channel.handlers");
+        foreach ($channelHandlers as $handler) {
             if (isset($handler['type']) && $handler['type'] == 'File') {
                 $fileHandlerFound = true;
             }
@@ -90,6 +91,10 @@ class SugarGator extends SugarLogger implements LoggerTemplate
             parent::log($level, $message);
         }
 
+        // NOTE: setting the db property in the constructor triggers an uncaught InputValidationException, so set them here instead.
+        $this->db = DBManagerFactory::getInstance();
+        $this->conn = $this->db->getConnection();
+
         if (is_array($message) && safeCount($message) == 1) {
             $message = array_shift($message);
         }
@@ -105,13 +110,20 @@ class SugarGator extends SugarLogger implements LoggerTemplate
         }
 
         $this->bean = $logsBean;
-
+        $this->bean->setModifiedDate();
+        $this->bean->setCreateData(false, $current_user);
+        $this->bean->id = Uuid::uuid4();
         $this->bean->channel = $this->channel;
         $this->bean->pid = getmypid();
         $this->bean->log_level = $level;
-        $this->bean->description = $message;
+
+        // log entries can be huge - if they're longer than 4K, consult the physical log file.
+        $this->bean->description = substr($message, 0, 4000);
         $this->bean->name = substr($message, 0, 255);
+
         $this->bean->assigned_user_id = $current_user->id;
-        $this->bean->save();
+
+        // NOTE: we don't save the bean, because that triggers logic hooks and other overhead we don't need. Just insert the record.
+        $this->db->insertParams($this->bean->table_name, $this->bean->getFieldDefinitions(), $this->bean->toArray());
     }
 }

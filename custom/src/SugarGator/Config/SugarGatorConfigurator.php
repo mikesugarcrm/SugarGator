@@ -13,7 +13,7 @@ class SugarGatorConfigurator
         $cfg->loadConfig();
 
         foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
-            if ($this->channelHasASugarGator($settings)) {
+            if ($this->channelHasASugarGator($settings['handlers'])) {
                 break;
             }
 
