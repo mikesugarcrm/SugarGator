@@ -25,19 +25,19 @@ $manifest = array (
   'readme' => '',
   'key' => 'sg',
   'author' => 'Mike Andersen',
-  'description' => 'Sugar Logging Aggregator',
+  'description' => 'Sugar Logs Aggregator',
   'icon' => '',
   'is_uninstallable' => true,
-  'name' => 'sugagator',
+  'name' => 'SugarGator',
   'published_date' => '2024-11-19 16:50:39',
   'type' => 'module',
-  'version' => 1732035040,
+  'version' => 0.02,
   'remove_tables' => 'prompt',
 );
 
 
 $installdefs = array (
-  'id' => 'sugagator',
+  'id' => 'sugargator',
   'beans' => 
   array (
     0 => 
@@ -63,13 +63,13 @@ $installdefs = array (
     ),
     1 => 
     array (
-      'from' => '<basepath>/custom/Extension/application/Ext/Include/sugagator.php',
-      'to' => 'custom/Extension/application/Ext/Include/sugagator.php',
+      'from' => '<basepath>/custom/Extension/application/Ext/Include/sugargator.php',
+      'to' => 'custom/Extension/application/Ext/Include/sugargator.php',
     ),
     2 => 
     array (
-      'from' => '<basepath>/custom/Extension/application/Ext/Language/en_us.sugagator.php',
-      'to' => 'custom/Extension/application/Ext/Language/en_us.sugagator.php',
+      'from' => '<basepath>/custom/Extension/application/Ext/Language/en_us.sugargator.php',
+      'to' => 'custom/Extension/application/Ext/Language/en_us.sugargator.php',
     ),
     3 => 
     array (
@@ -146,6 +146,16 @@ $installdefs = array (
       'from' => '<basepath>/custom/src/SugarGator/Jobs/PruneLogRecords.php',
       'to' => 'custom/src/SugarGator/Jobs/PruneLogRecords.php',
     ),
+   18 =>
+   array (
+      'from' => '<basepath>/custom/clients/base/views/profileactions/profileactions.php',
+      'to' => 'custom/clients/base/views/profileactions/profileactions.php',
+   ),
+   19 =>
+   array (
+      'from' => '<basepath>/custom/Extension/application/Ext/Language/en_us.sugargator_profile_menu_label.php',
+      'to' => 'custom/Extension/application/Ext/Language/en_us.sugargator_profile_menu_label.php',
+   ),
   ),
   'post_execute' => 
   array (
