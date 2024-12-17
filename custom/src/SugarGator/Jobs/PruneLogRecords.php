@@ -125,7 +125,7 @@ class PruneLogRecords implements \RunnableSchedulerJob
         }
 
         $pruneDate = '';
-        $sql = "delete from {$this->seed->table_name} where channel = ? and date_entered > ? and deleted = ?";
+        $sql = "delete from {$this->seed->table_name} where channel = ? and date_entered < ? and deleted = ?";
 
         try {
             $pruneDate = $this->getPruneByDate($numOfDays);
@@ -144,7 +144,7 @@ class PruneLogRecords implements \RunnableSchedulerJob
      */
     protected function getPruneByDate(int $numOfDays): string
     {
-        $dateIntervalToPrune = new DateInterval('PT' . $numOfDays . 'd');
+        $dateIntervalToPrune = new DateInterval('P' . $numOfDays . 'D');
 
         $sugarDateTime = new SugarDateTime();
 
