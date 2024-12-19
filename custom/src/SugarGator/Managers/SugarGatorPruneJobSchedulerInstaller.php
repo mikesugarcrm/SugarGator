@@ -18,6 +18,7 @@ class SugarGatorPruneJobSchedulerInstaller
      */
     public function createScheduler(): void
     {
+        $GLOBALS['log']->fatal("Creating SugarGator Logs Pruning Job");
         $sugarQuery = new SugarQuery();
         $sugarQuery->select("id");
         $sugarQuery->from(BeanFactory::newBean("Schedulers"));
@@ -25,6 +26,7 @@ class SugarGatorPruneJobSchedulerInstaller
         $result = $sugarQuery->execute();
 
         if (count($result) !== 0) {
+            $GLOBALS['log']->fatal("Creating SugarGator Logs Pruning Job already exists.");
             return;
         }
 
@@ -37,6 +39,7 @@ class SugarGatorPruneJobSchedulerInstaller
         $job->status = "Active";
         $job->catch_up = true;
         $job->save();
+        $GLOBALS['log']->fatal("SugarGator Logs Pruning Job has been created - '$job->id'");
     }
 
 
@@ -45,6 +48,7 @@ class SugarGatorPruneJobSchedulerInstaller
      */
     public function deactivateAndSoftDelete(): void
     {
+        $GLOBALS['log']->fatal("Removing SugarGator Logs Pruning Job");
         $qb = DBManagerFactory::getConnection()->createQueryBuilder();
 
         $qb->update("schedulers", "s")
@@ -55,6 +59,7 @@ class SugarGatorPruneJobSchedulerInstaller
 
             );
         $qb->executeStatement();
+        $GLOBALS['log']->fatal("SugarGator Logs Pruning Job has been removed.");
     }
 
 }

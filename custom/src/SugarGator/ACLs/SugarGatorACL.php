@@ -7,6 +7,7 @@ use DBManagerFactory;
 use Exception;
 use SugarBean;
 use Sugarcrm\Sugarcrm\Dbal\Connection;
+use ACLAction;
 
 class SugarGatorACL
 {
@@ -26,6 +27,8 @@ class SugarGatorACL
     public function setSugarGatorACLs(): void
     {
         global $ACLActions;
+        $GLOBALS['log']->fatal("Setting up SugarGator ACL's");
+        ACLAction::addActions($this->module, 'module');
         foreach ($ACLActions['module']['actions'] as $action_name => $action_def) {
             $aclActionBean = $this->getACLActionBean($action_name);
 
@@ -40,6 +43,7 @@ class SugarGatorACL
             $aclActionBean->save();
             $this->linkActionsToRoles($aclActionBean);
         }
+        $GLOBALS['log']->fatal("Done with setting up SugarGator ACL's");
     }
 
 
@@ -88,15 +92,7 @@ class SugarGatorACL
 
     public function deleteSugarGatorACLs(): void
     {
-        global $ACLActions;
-        foreach ($ACLActions['module']['actions'] as $action_name => $action_def) {
-            $aclActionBean = $this->getACLActionBean($action_name);
-            if (!is_a($aclActionBean, 'SugarBean')) {
-                $GLOBALS['log']->fatal("Could not delete SugarGator ACL for action '$action_name'.");
-                continue;
-            }
-            $aclActionBean->delete();
-        }
+        ACLAction::removeActions($this->module, 'module');
+        $GLOBALS['log']->fatal("Done with tearing down SugarGator ACL's");
     }
-
 }

@@ -9,42 +9,62 @@ class SugarGatorConfigurator
     public function configure()
     {
         global $sugar_config;
+        $GLOBALS['log']->fatal("SugarGator configurator is configuring");
         $cfg = new Configurator();
         $cfg->loadConfig();
 
         foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
             if ($this->channelHasASugarGator($settings['handlers'])) {
-                break;
+                $handlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
+                if ($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] == 'off') {
+                    $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'debug';
+                } else {
+                    continue;
+                }
+            } else {
+                $cfg->config['logger']['channels'][$channel]['handlers'][] = [
+                    'level' => 'debug',
+                    'type' => 'SugarGator',
+                    'name' => $channel,
+                    'max_num_records' => 100,
+                    'prune_records_older_than_days' => 2
+                ];
             }
 
-            $cfg->config['logger']['channels'][$channel]['handlers'][] = [
-                'level' => 'debug',
-                'type' => 'SugarGator',
-                'name' => $channel,
-                'max_num_records' => 100,
-                'prune_records_older_than_days' => 2
-            ];
         }
         $cfg->saveConfig();
+        $GLOBALS['log']->fatal("SugarGator configurator is done with configuring!");
     }
 
 
     public function unconfigure(): void
     {
         global $sugar_config;
+        $GLOBALS['log']->fatal("SugarGator configurator is uninstalling!");
         $cfg = new Configurator();
         $cfg->loadConfig();
 
         foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
-            $handlerIndex = $this->getSugarGatorHandlerIndex($settings);
+            if (!is_array($settings) || !isset($settings['handlers'])) {
+                continue;
+            }
+
+            $handlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
             if ($handlerIndex === false) {
                 continue;
             }
 
-            unset($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]);
-            unset($sugar_config['logger']['channels'][$channel]['handlers'][$handlerIndex]);
+
+            if (isset($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex])) {
+                $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'off';
+                $GLOBALS['log']->fatal("turning off cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex]");
+            } else {
+                $GLOBALS['log']->fatal("cannot turn off cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex] - channel is not set");
+            }
         }
+
         $cfg->saveConfig();
+        $GLOBALS['log']->fatal("SugarGator configurator has finished uninstalling!");
     }
 
 

@@ -31,7 +31,7 @@ $manifest = array (
   'name' => 'SugarGator',
   'published_date' => '2024-11-19 16:50:39',
   'type' => 'module',
-  'version' => 0.02,
+  'version' => 0.03,
   'remove_tables' => 'prompt',
 );
 
@@ -101,65 +101,74 @@ $installdefs = array (
       'from' => '<basepath>/custom/src/Logger/Handler/SugarGatorHandler.php',
       'to' => 'custom/src/Logger/Handler/SugarGatorHandler.php',
     ),
-    9 => 
-    array (
-      'from' => '<basepath>/custom/post_install/SugarGatorConfigurator.php',
-      'to' => 'custom/post_install/SugarGatorConfigurator.php',
-    ),
-    10 => 
+    9 =>
     array (
       'from' => '<basepath>/custom/Extension/modules/sg_LogsAggregator/Ext/Vardefs/indices.php',
       'to' => 'custom/Extension/modules/sg_LogsAggregator/Ext/Vardefs/indices.php',
     ),
-    11 => 
+    10 =>
     array (
       'from' => '<basepath>/custom/Extension/modules/Schedulers/Ext/Language/en_us.sugar_gator_pruner.php',
       'to' => 'custom/Extension/modules/Schedulers/Ext/Language/en_us.sugar_gator_pruner.php',
     ),
-    12 => 
+    11 =>
     array (
       'from' => '<basepath>/custom/Extension/modules/Schedulers/Ext/ScheduledTasks/sugarGatorPrunerJob.php',
       'to' => 'custom/Extension/modules/Schedulers/Ext/ScheduledTasks/sugarGatorPrunerJob.php',
     ),
-    13 => 
+    12 =>
     array (
       'from' => '<basepath>/custom/src/SugarGator/Config/SugarGatorConfigurator.php',
       'to' => 'custom/src/SugarGator/Config/SugarGatorConfigurator.php',
     ),
-    14 => 
+    13 =>
     array (
       'from' => '<basepath>/custom/src/SugarGator/ACLs/SugarGatorACL.php',
       'to' => 'custom/src/SugarGator/ACLs/SugarGatorACL.php',
     ),
-    15 => 
+    14 =>
     array (
       'from' => '<basepath>/custom/src/SugarGator/Managers/SugarGatorPruneJobSchedulerInstaller.php',
       'to' => 'custom/src/SugarGator/Managers/SugarGatorPruneJobSchedulerInstaller.php',
     ),
-    16 => 
+    15 =>
     array (
       'from' => '<basepath>/custom/src/SugarGator/Setup/SugarGatorSetup.php',
       'to' => 'custom/src/SugarGator/Setup/SugarGatorSetup.php',
     ),
-    17 => 
+    16 =>
     array (
       'from' => '<basepath>/custom/src/SugarGator/Jobs/PruneLogRecords.php',
       'to' => 'custom/src/SugarGator/Jobs/PruneLogRecords.php',
     ),
-   18 =>
+   17 =>
    array (
       'from' => '<basepath>/custom/clients/base/views/profileactions/profileactions.php',
       'to' => 'custom/clients/base/views/profileactions/profileactions.php',
    ),
-   19 =>
+   18 =>
    array (
       'from' => '<basepath>/custom/Extension/application/Ext/Language/en_us.sugargator_profile_menu_label.php',
       'to' => 'custom/Extension/application/Ext/Language/en_us.sugargator_profile_menu_label.php',
    ),
+  19 =>
+      array (
+          'from' => '<basepath>/scripts/sugargator_post_install.php',
+          'to' => 'scripts/sugargator_post_install.php',
+      ),
+  20 =>
+      array (
+          'from' => '<basepath>/scripts/sugargator_pre_uninstall.php',
+          'to' => 'scripts/sugargator_pre_uninstall.php',
+      ),
   ),
   'post_execute' => 
   array (
-    0 => '<basepath>/scripts/post_install.php',
+    0 => '<basepath>/scripts/sugargator_post_install.php',
+  ),
+  'pre_uninstall' =>
+  array (
+      0 => '<basepath>/scripts/sugargator_pre_uninstall.php',
   ),
   'language' => 
   array (
