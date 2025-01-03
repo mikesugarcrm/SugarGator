@@ -109,6 +109,10 @@ class SugarGator extends SugarLogger implements LoggerTemplate
             return;
         }
 
+        if (!$this->db->tableExists($logsBean->getTableName())) {
+            return;
+        }
+
         $this->bean = $logsBean;
         $this->bean->setModifiedDate();
         $this->bean->setCreateData(false, $current_user);
@@ -124,6 +128,10 @@ class SugarGator extends SugarLogger implements LoggerTemplate
         $this->bean->assigned_user_id = $current_user->id;
 
         // NOTE: we don't save the bean, because that triggers logic hooks and other overhead we don't need. Just insert the record.
-        $this->db->insertParams($this->bean->table_name, $this->bean->getFieldDefinitions(), $this->bean->toArray());
+        try {
+            $this->db->insertParams($this->bean->table_name, $this->bean->getFieldDefinitions(), $this->bean->toArray());
+        } catch (\Exception $e) {
+            // if we can't write to the table, do nothing.
+        }
     }
 }

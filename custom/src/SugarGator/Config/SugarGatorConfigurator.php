@@ -44,22 +44,28 @@ class SugarGatorConfigurator
         $cfg = new Configurator();
         $cfg->loadConfig();
 
-        foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
+        foreach ($cfg->config['logger']['channels'] as $channel => $settings) {
             if (!is_array($settings) || !isset($settings['handlers'])) {
                 continue;
             }
-
-            $handlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
-            if ($handlerIndex === false) {
+            $sugar_config['logger']['channels'][$channel]['handlers'] = [];
+            $sugarGatorHandlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
+            if ($sugarGatorHandlerIndex === false) {
                 continue;
             }
 
+            if (isset($cfg->config['logger']['channels'][$channel]['handlers'][$sugarGatorHandlerIndex])) {
+                $handlersToKeep = [];
+                foreach ($settings['handlers'] as $handlerIndex => $handler) {
+                    if ($sugarGatorHandlerIndex != $handlerIndex) {
+                        $handlersToKeep[] = $handler;
+                    }
+                }
+                $cfg->config['logger']['channels'][$channel]['handlers'] = $handlersToKeep;
 
-            if (isset($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex])) {
-                $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'off';
-                $GLOBALS['log']->fatal("turning off cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex]");
+                $GLOBALS['log']->fatal("removing cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex]");
             } else {
-                $GLOBALS['log']->fatal("cannot turn off cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex] - channel is not set");
+                $GLOBALS['log']->fatal("cannot remove cfg->config['logger']['channels']['$channel']['handlers'][$handlerIndex] - channel is not set");
             }
         }
 
