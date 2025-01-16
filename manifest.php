@@ -15,7 +15,8 @@ $manifest = array (
   'built_in_version' => '13.3.0',
   'acceptable_sugar_versions' => 
   array (
-    0 => '',
+    0 => '13.*',
+    1 => '14.*',
   ),
   'acceptable_sugar_flavors' => 
   array (
@@ -31,7 +32,7 @@ $manifest = array (
   'name' => 'SugarGator',
   'published_date' => '2024-11-19 16:50:39',
   'type' => 'module',
-  'version' => 0.03,
+  'version' => 0.05,
   'remove_tables' => 'prompt',
 );
 

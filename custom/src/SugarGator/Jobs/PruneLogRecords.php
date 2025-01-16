@@ -93,7 +93,7 @@ class PruneLogRecords implements \RunnableSchedulerJob
                 where id in (
                     select id from (
                         select id 
-                        from sg_logsaggregator 
+                        from {$this->seed->table_name} 
                         where channel = ? 
                         and deleted = ?
                         order by date_entered DESC 

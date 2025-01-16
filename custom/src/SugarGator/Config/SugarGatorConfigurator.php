@@ -13,25 +13,32 @@ class SugarGatorConfigurator
         $cfg = new Configurator();
         $cfg->loadConfig();
 
+        if (!isset($cfg->config['logger']['channels']['sugarcrm']['handlers'])) {
+            $cfg->config['logger']['channels']['sugarcrm']['handlers'] = [];
+        }
+
         foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
             if ($this->channelHasASugarGator($settings['handlers'])) {
                 $handlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
-                if ($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] == 'off') {
-                    $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'debug';
+                if ($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] != 'EMERGENCY') {
+                    $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'EMERGENCY';
                 } else {
                     continue;
                 }
             } else {
                 $cfg->config['logger']['channels'][$channel]['handlers'][] = [
-                    'level' => 'debug',
+                    'level' => 'EMERGENCY',
                     'type' => 'SugarGator',
                     'name' => $channel,
                     'max_num_records' => 100,
                     'prune_records_older_than_days' => 2
                 ];
             }
-
         }
+
+        // create settings for the stock $GLOBALS['log']->method() logger.
+        $cfg->config['logger']['channels']['sugarcrm']['level'] = 'EMERGENCY';
+
         $cfg->saveConfig();
         $GLOBALS['log']->fatal("SugarGator configurator is done with configuring!");
     }

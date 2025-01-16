@@ -1,6 +1,6 @@
 <?php
 
-require_once('clients/base/views/profileactions/profileactions.php');
+include('clients/base/views/profileactions/profileactions.php');
 $viewdefs['base']['view']['profileactions'][] =
 [
     'route' => '#sg_LogsAggregator',

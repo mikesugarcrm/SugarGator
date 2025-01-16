@@ -2,6 +2,7 @@
 
 //namespace Sugarcrm\Sugarcrm\custom\inc\SugarLogger;
 use Doctrine\DBAL\Connection;
+use Sugarcrm\Sugarcrm\custom\SugarGator\Config\SugarGatorConfigurator;
 use Sugarcrm\Sugarcrm\Util\Uuid;
 
 class SugarGator extends SugarLogger implements LoggerTemplate
@@ -13,7 +14,6 @@ class SugarGator extends SugarLogger implements LoggerTemplate
     public string $channel = '';
     public array $config = [];
     public DBManager $db;
-    public Connection $conn;
 
 
     public function __construct()
@@ -86,14 +86,20 @@ class SugarGator extends SugarLogger implements LoggerTemplate
 
     public function log($level, $message): void
     {
-        global $current_user;
+        global $current_user, $timedate;
+
+        // it's possible that this global variable might not be set depending on the settings for logger.level
+        // in $sugar_config. If it's not set, we need it so set it here.
+        if (is_null($timedate)) {
+            $timedate = TimeDate::getInstance();
+        }
+
         if ($this->copyToDefaultLogger()) {
             parent::log($level, $message);
         }
 
         // NOTE: setting the db property in the constructor triggers an uncaught InputValidationException, so set them here instead.
         $this->db = DBManagerFactory::getInstance();
-        $this->conn = $this->db->getConnection();
 
         if (is_array($message) && safeCount($message) == 1) {
             $message = array_shift($message);
@@ -113,7 +119,12 @@ class SugarGator extends SugarLogger implements LoggerTemplate
             return;
         }
 
+        if (!$this->shouldLogToDB($level)) {
+            return;
+        }
+
         $this->bean = $logsBean;
+
         $this->bean->setModifiedDate();
         $this->bean->setCreateData(false, $current_user);
         $this->bean->id = Uuid::uuid4();
@@ -130,8 +141,44 @@ class SugarGator extends SugarLogger implements LoggerTemplate
         // NOTE: we don't save the bean, because that triggers logic hooks and other overhead we don't need. Just insert the record.
         try {
             $this->db->insertParams($this->bean->table_name, $this->bean->getFieldDefinitions(), $this->bean->toArray());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // if we can't write to the table, do nothing.
         }
+    }
+
+
+    public function shouldLogToDB(string $level): bool
+    {
+        // if this is a custom logging channel, the decision to log to the DB or not has already been made based on
+        // config_override values.
+        if ($this->channel != $this->defaultChannel) {
+            return true;
+        }
+
+        // if we're using the stock $GLOBALS['log']->method() logger, we need to check if we have added configs to
+        // config_override to disable DB logging. If there are no configs, the default logger level will be 'EMERGENCY'.
+        $originalLogLevel = SugarConfig::getInstance()->get("logger.level");
+        $loggerManager = LoggerManager::getLogger();
+        $loggerManager->setLevel($this->getLogLevelForStockLoggerWithSugarGator());
+        $shouldLog = LoggerManager::getLogger()->wouldLog($level);
+        $loggerManager->setLevel($originalLogLevel);
+        return $shouldLog;
+    }
+
+
+    public function getLogLevelForStockLoggerWithSugarGator(): string
+    {
+        $sgc = new SugarGatorConfigurator();
+        $handlers = SugarConfig::getInstance()->get("logger.channels.$this->defaultChannel.handlers", []);
+
+        if ($sgc->channelHasASugarGator($handlers)) {
+            $index = $sgc->getSugarGatorHandlerIndex($handlers);
+            $key = "logger.channels.$this->defaultChannel.handlers.$index.level";
+        } else {
+            $key = "logger.channels.$this->defaultChannel.level";
+        }
+
+        // if for any reason the configs are not set, return 'EMERGENCY', which will mean no logging to the DB.
+        return SugarConfig::getInstance()->get($key, 'EMERGENCY');
     }
 }
