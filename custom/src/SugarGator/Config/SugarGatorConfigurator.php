@@ -20,14 +20,15 @@ class SugarGatorConfigurator
         foreach ($sugar_config['logger']['channels'] as $channel => $settings) {
             if ($this->channelHasASugarGator($settings['handlers'])) {
                 $handlerIndex = $this->getSugarGatorHandlerIndex($settings['handlers']);
-                if ($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] != 'EMERGENCY') {
-                    $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'EMERGENCY';
+                // set this to the most restrictive setting initially. Otherwise, we can flood the system with logs.
+                if ($cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] != 'emergency') {
+                    $cfg->config['logger']['channels'][$channel]['handlers'][$handlerIndex]['level'] = 'emergency';
                 } else {
                     continue;
                 }
             } else {
-                $cfg->config['logger']['channels'][$channel]['handlers'][] = [
-                    'level' => 'EMERGENCY',
+                $cfg->config['logger']['channels'][$channel]['handlers']['SugarGator'] = [
+                    'level' => 'emergency',
                     'type' => 'SugarGator',
                     'name' => $channel,
                     'max_num_records' => 100,
@@ -36,8 +37,9 @@ class SugarGatorConfigurator
             }
         }
 
-        // create settings for the stock $GLOBALS['log']->method() logger.
-        $cfg->config['logger']['channels']['sugarcrm']['level'] = 'EMERGENCY';
+        // create settings for the stock $GLOBALS['log']->method() logger to use the SugarGator.
+        // This should be disabled by default.
+        $cfg->config['logger']['channels']['sugarcrm']['handlers']['SugarGator']['level'] = 'off';
 
         $cfg->saveConfig();
         $GLOBALS['log']->fatal("SugarGator configurator is done with configuring!");
@@ -81,7 +83,7 @@ class SugarGatorConfigurator
     }
 
 
-    public function getSugarGatorHandlerIndex($settings): int|bool
+    public function getSugarGatorHandlerIndex($settings)
     {
         $handlerIndex = false;
         foreach ($settings as $index => $handlerSettings) {

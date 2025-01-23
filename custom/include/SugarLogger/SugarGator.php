@@ -88,6 +88,23 @@ class SugarGator extends SugarLogger implements LoggerTemplate
     {
         global $current_user, $timedate;
 
+        static $lastMessage;
+
+        if (is_array($message) && safeCount($message) == 1) {
+            $message = array_shift($message);
+        }
+
+        if (is_array($message) && safeCount($message) > 1) {
+            $message = implode("\n", $message);
+        }
+
+        if ($lastMessage == $message) {
+            // we're stuck in a loop - return;
+            return;
+        } else {
+            $lastMessage = $message;
+        }
+
         // it's possible that this global variable might not be set depending on the settings for logger.level
         // in $sugar_config. If it's not set, we need it so set it here.
         if (is_null($timedate)) {
@@ -100,14 +117,6 @@ class SugarGator extends SugarLogger implements LoggerTemplate
 
         // NOTE: setting the db property in the constructor triggers an uncaught InputValidationException, so set them here instead.
         $this->db = DBManagerFactory::getInstance();
-
-        if (is_array($message) && safeCount($message) == 1) {
-            $message = array_shift($message);
-        }
-
-        if (is_array($message) && safeCount($message) > 1) {
-            $message = implode("\n", $message);
-        }
 
         $logsBean = BeanFactory::newBean('sg_LogsAggregator');
 
@@ -130,7 +139,7 @@ class SugarGator extends SugarLogger implements LoggerTemplate
         $this->bean->id = Uuid::uuid4();
         $this->bean->channel = $this->channel;
         $this->bean->pid = getmypid();
-        $this->bean->log_level = $level;
+        $this->bean->log_level = strtolower($level);
 
         // log entries can be huge - if they're longer than 4K, consult the physical log file.
         $this->bean->description = substr($message, 0, 4000);

@@ -1,0 +1,18 @@
+<div class="sugargator" style="text-align: left; margin: 10px 40% 10px 10%">
+    {{#each meta.fields}}
+        <div style="margin: 10px 0px 5px 0px;">
+            <span>
+                {{str label}}:
+            </span>
+            <span style="width: 75%;">
+                {{field ../this model=../model template="edit"}}
+            </span>
+        </div>
+    {{/each}}
+
+    <div style="margin: 10px; text-align: center;">
+        {{#each meta.buttons}}
+            {{field ../this model=../model template="edit"}}
+        {{/each}}
+    </div>
+</div>

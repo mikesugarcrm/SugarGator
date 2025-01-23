@@ -32,7 +32,7 @@ $manifest = array (
   'name' => 'SugarGator',
   'published_date' => '2024-11-19 16:50:39',
   'type' => 'module',
-  'version' => 0.05,
+  'version' => 0.10,
   'remove_tables' => 'prompt',
 );
 
@@ -161,6 +161,41 @@ $installdefs = array (
       array (
           'from' => '<basepath>/scripts/sugargator_pre_uninstall.php',
           'to' => 'scripts/sugargator_pre_uninstall.php',
+      ),
+  21 =>
+      array (
+          'from' => '<basepath>/custom/clients/base/api/SugarGatorApi.php',
+          'to' => 'custom/clients/base/api/SugarGatorApi.php',
+      ),
+  22 =>
+      array (
+          'from' => '<basepath>/custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.hbs',
+          'to' => 'custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.hbs',
+      ),
+  23 =>
+      array (
+          'from' => '<basepath>/custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.js',
+          'to' => 'custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.js',
+      ),
+  24 =>
+      array (
+          'from' => '<basepath>/custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.php',
+          'to' => 'custom/clients/base/views/SugarGatorDashlet/SugarGatorDashlet.php',
+      ),
+  25 =>
+      array (
+          'from' => '<basepath>/custom/modules/sg_LogsAggregator/clients/base/fields/enum/enum.js',
+          'to' => 'custom/modules/sg_LogsAggregator/clients/base/fields/enum/enum.js',
+      ),
+  26 =>
+      array (
+          'from' => '<basepath>/modules/sg_LogsAggregator/sg_LogsAggregator.php',
+          'to' => 'modules/sg_LogsAggregator/sg_LogsAggregator.php',
+      ),
+  27 =>
+      array (
+          'from' => '<basepath>/modules/sg_LogsAggregator/vardefs.php',
+          'to' => 'modules/sg_LogsAggregator/vardefs.php',
       ),
   ),
   'post_execute' => 
