@@ -187,16 +187,6 @@ $installdefs = array (
           'from' => '<basepath>/custom/modules/sg_LogsAggregator/clients/base/fields/enum/enum.js',
           'to' => 'custom/modules/sg_LogsAggregator/clients/base/fields/enum/enum.js',
       ),
-  26 =>
-      array (
-          'from' => '<basepath>/modules/sg_LogsAggregator/sg_LogsAggregator.php',
-          'to' => 'modules/sg_LogsAggregator/sg_LogsAggregator.php',
-      ),
-  27 =>
-      array (
-          'from' => '<basepath>/modules/sg_LogsAggregator/vardefs.php',
-          'to' => 'modules/sg_LogsAggregator/vardefs.php',
-      ),
   ),
   'post_execute' => 
   array (
